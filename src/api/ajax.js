@@ -1,0 +1,38 @@
+// axios进行二次封装
+import axios from "axios";
+import NProgress from "nprogress"; //进度条
+import "nprogress/nprogress";
+// 配置不显示右上角旋转进度条
+NProgress.configure({ showSpinner: false });
+// --------------1. 配置通用的基础路径和超时
+const instance = axios.create({
+  baseURL: "/api",
+  timeout: 15000,
+});
+// aixos请求拦截器
+instance.interceptors.request.use((config) => {
+  console.log("请求拦截器执行");
+  // -------------------2. 显示请求进度条
+  NProgress.start(); //显示进度条
+  return config;
+});
+// axios响应拦截器
+instance.interceptors.response.use(
+  (response) => {
+    console.log("响应拦截器成功回调执行");
+    // 请求结束隐藏进度条
+    NProgress.done();
+    // ---------------------3. 成功返回的数据不再是response, 而直接是响应体数据response.data
+    return response.data;
+  },
+  (error) => {
+    console.log("响应拦截器失败回调执行");
+    // 请求结束隐藏进度条
+    NProgress.done();
+    // ----------------------4. 统一处理请求错误, 具体请求也可以选择处理或不处理
+    alert(`请求出错：${error.message || "未知错误"}`);
+    return Promise.reject(error);
+  }
+);
+// 向外暴露封装好的instance
+export default instance;
