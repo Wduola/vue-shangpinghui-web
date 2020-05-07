@@ -1,5 +1,4 @@
 <template>
-  <!-- 头部 -->
   <header class="header">
     <!-- 头部的第一行 -->
     <div class="top">
@@ -9,7 +8,7 @@
           <p>
             <span>请</span>
             <router-link to="/login">登录</router-link>
-            <router-link to="register" class="register">免费注册</router-link>
+            <router-link to="/register" class="register">免费注册</router-link>
           </p>
         </div>
         <div class="typeList">
@@ -27,7 +26,7 @@
     <!--头部第二行 搜索区域-->
     <div class="bottom">
       <h1 class="logoArea">
-        <router-link class="logo" title="尚品汇" to="/">
+        <router-link class="logo" to="/">
           <img src="./images/logo.png" alt="" />
         </router-link>
       </h1>
@@ -39,11 +38,7 @@
             class="input-error input-xxlarge"
             v-model="keyword"
           />
-          <button
-            class="sui-btn btn-xlarge btn-danger"
-            type="button"
-            @click="search"
-          >
+          <button class="sui-btn btn-xlarge btn-danger" @click.prevent="search">
             搜索
           </button>
         </form>
@@ -55,21 +50,101 @@
 <script>
 export default {
   name: "Header",
+
   data() {
-    return { keyword: "shouji" };
+    return {
+      keyword: "atguigu",
+    };
   },
+
   methods: {
     search() {
-      const keyword = this.keyword;
+      // 编程式路由导航(跳转)
       // 字符串模式
-      this.$router.push(
-        `/search/${this.keyword}?keyword=${this.keyword.toUpperCase()}`
-      );
-      this.$router.replace({
+      // this.$router.push(`/search/${this.keyword}?keyword2=${this.keyword.toUpperCase()}`)
+      // 对象模式  (在开发中用得比较多)
+      // const keyword = this.keyword
+      // if (keyword==='') {
+      //    this.$router.push('/search')
+      // } else {
+      //   this.$router.push(`/search/${keyword}?keyword2=${keyword.toUpperCase()}`)
+      // }
+
+      // 对象写法1:
+      /* if (keyword==='') {
+          this.$router.push({
+            name: 'search'
+          })
+        } else {
+          this.$router.push({
+            name: 'search', 
+            params: { keyword: keyword },
+            query: { keyword2: keyword.toUpperCase() }
+          })
+        } */
+
+      // 对象写法2:
+      /* this.$router.push({
+          name: 'search', 
+          params: { keyword: keyword==='' ? undefined : keyword },
+          query: { keyword2: keyword.toUpperCase() }
+        })
+        */
+
+      /* 
+        问题: 编程式路由跳转到当前路由(参数不变), 会抛出NavigationDuplicated的警告错误
+        router.push(location, onComplete?, onAbort?): 如果直接指定了回调函数, push方法没有返回值
+        router.push(location).then(onComplete).catch(onAbort)
+            如果没有直接指定回调函数, push方法返回值为promise
+            如果指定的是当前路由路径且参数数据不变化, push内部就会抛出一个失败的promise
+        */
+      /* 
+       解决方法1: 在进行路由跳转时指定成功/失败的回调函数, 也可以catch()处理抛出的错误promise
+       */
+      /* 
+        this.$router.push({
+          name: 'search', 
+          params: { keyword: keyword==='' ? undefined : keyword },
+          query: { keyword2: keyword.toUpperCase() }
+        }, () => {}) */
+      /* 
+        this.$router.push({
+          name: 'search', 
+          params: { keyword: keyword==='' ? undefined : keyword },
+          query: { keyword2: keyword.toUpperCase() }
+        }, undefined, () => {}) */
+
+      /* 
+        this.$router.push({
+          name: 'search', 
+          params: { keyword: keyword==='' ? undefined : keyword },
+          query: { keyword2: keyword.toUpperCase() }
+        }).catch(() => {}) 
+        */
+
+      /* this.$router.replace({ // push是重写后的方法
+          name: 'search', 
+          params: { keyword: keyword==='' ? undefined : keyword },
+          query: { keyword2: keyword.toUpperCase() }
+        }) */
+
+      const keyword = this.keyword;
+
+      const location = {
+        // push是重写后的方法
         name: "search",
-        params: { keyword: keyword === "" ? undefined : keyword },
-        query: { keyword2: keyword.toUpperCase() },
-      });
+      };
+      // 如果keyword有值, 指定params
+      if (keyword) {
+        location.params = { keyword };
+      }
+
+      // 同时还要携带当前原本的query
+      const { query } = this.$route;
+      location.query = query;
+
+      // 跳转到Search
+      this.$router.push(location);
     },
   },
 };
@@ -81,15 +156,19 @@ export default {
     background-color: #eaeaea;
     height: 30px;
     line-height: 30px;
+
     .container {
       width: 1200px;
       margin: 0 auto;
       overflow: hidden;
+
       .loginList {
         float: left;
+
         p {
           float: left;
           margin-right: 10px;
+
           .register {
             border-left: 1px solid #b3aeae;
             padding: 0 5px;
@@ -97,10 +176,13 @@ export default {
           }
         }
       }
+
       .typeList {
         float: right;
+
         a {
           padding: 0 10px;
+
           & + a {
             border-left: 1px solid #b3aeae;
           }
@@ -108,12 +190,15 @@ export default {
       }
     }
   }
+
   & > .bottom {
     width: 1200px;
     margin: 0 auto;
     overflow: hidden;
+
     .logoArea {
       float: left;
+
       .logo {
         img {
           width: 175px;
@@ -121,11 +206,14 @@ export default {
         }
       }
     }
+
     .searchArea {
       float: right;
       margin-top: 35px;
+
       .searchForm {
         overflow: hidden;
+
         input {
           box-sizing: border-box;
           width: 490px;
@@ -133,10 +221,12 @@ export default {
           padding: 0px 4px;
           border: 2px solid #ea4a36;
           float: left;
+
           &:focus {
             outline: none;
           }
         }
+
         button {
           height: 32px;
           width: 68px;
@@ -145,6 +235,7 @@ export default {
           color: #fff;
           float: left;
           cursor: pointer;
+
           &:focus {
             outline: none;
           }

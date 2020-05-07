@@ -17,6 +17,8 @@ export default {
   name: "App",
   async mounted() {
     // console.log(this.$store.state);
+    // 通过异步action获取异步获取数据到vuex的state中
+    this.$store.dispatch("getBaseCategoryList");
   },
   components: {
     Header,
