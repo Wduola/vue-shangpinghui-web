@@ -12,10 +12,14 @@
 <script>
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { reqFloors } from "@/api";
 
 export default {
   name: "App",
   async mounted() {
+    // 测试针对mock接口的vuex代码
+    this.$store.dispatch("getFloors");
+    this.$store.dispatch("getBanners");
     // console.log(this.$store.state);
     // 通过异步action获取异步获取数据到vuex的state中
     this.$store.dispatch("getBaseCategoryList");
