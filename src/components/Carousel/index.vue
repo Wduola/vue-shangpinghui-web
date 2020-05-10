@@ -19,8 +19,12 @@ import Swiper from "swiper";
 export default {
   name: "Carousel",
   props: {
-    //声明接收属性
-    carouselList: Array,
+    carouselList: Array, //声明接收属性
+    autoplay: {
+      //设置轮播图自动播放
+      type: Boolean,
+      default: true,
+    },
   },
   mounted() {
     if (this.carouselList.length > 0) {
@@ -48,6 +52,7 @@ export default {
       new Swiper(this.$refs.swiper, {
         // 循环模式选项
         loop: true,
+        autoplay: this.autoplay, // 是否自动轮播
         // 如果需要分页器
         pagination: {
           el: ".swiper-pagination",

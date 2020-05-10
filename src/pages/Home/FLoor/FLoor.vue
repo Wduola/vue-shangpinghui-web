@@ -29,7 +29,7 @@
             </div>
             <div class="floorBanner">
               <!-- 轮播图 -->
-              <Carousel :carouselList="floor.carouselList" />
+              <Carousel :carouselList="floor.carouselList" :autoplay="false" />
             </div>
             <div class="split">
               <span class="floor-x-line"></span>
