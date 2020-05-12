@@ -1,7 +1,12 @@
 <template>
   <div class="pagination">
-    <button :disabled="myCurrentPage === 1">上一页</button>
-    <button v-if="startEnd.start > 1">1</button>
+    <button
+      :disabled="myCurrentPage === 1"
+      @click="setCurrentPage(myCurrentPage - 1)"
+    >
+      上一页
+    </button>
+    <button v-if="startEnd.start > 1" @click="setCurrentPage(1)">1</button>
     <button disabled v-if="startEnd.start > 2">•••</button>
 
     <!-- 连续页码 -->
@@ -10,13 +15,19 @@
       :key="index"
       v-if="item >= startEnd.start"
       :class="{ active: item === myCurrentPage }"
+      @click="setCurrentPage(item)"
     >
       {{ item }}
     </button>
 
     <button disabled v-if="startEnd.end < totalPages - 1">•••</button>
     <button v-if="startEnd.end < totalPages">{{ totalPages }}</button>
-    <button :disabled="myCurrentPage === totalPages">下一页</button>
+    <button
+      :disabled="myCurrentPage === totalPages"
+      @click="setCurrentPage(myCurrentPage + 1)"
+    >
+      下一页
+    </button>
 
     <button style="margin-left: 30px" :disabled="true">
       共 {{ total }} 条
@@ -29,20 +40,24 @@ export default {
   name: "Pagination",
   props: {
     currentPage: {
+      //当前页码
       type: Number,
       default: 1,
     },
     pageSize: {
+      //每页数量
       type: Number,
       default: 5,
     },
     total: {
+      //总数量
       type: Number,
       default: 0,
     },
     showPageNo: {
+      //连续数码数
       type: Number,
-      default: 3, //最好为奇数
+      default: 5, //最好为奇数
     },
   },
   data() {
@@ -77,6 +92,21 @@ export default {
         }
       }
       return { start, end };
+    },
+  },
+  watch: {
+    // 当父组件改变了其对应的数据时，此时回调函数就会自动调用
+    currentPage(value) {
+      this.myCurrentPage = value;
+    },
+  },
+  methods: {
+    // 设置当前页码
+    setCurrentPage(currentPage) {
+      // 一定要跟新 自己data中当前页码，而不是更新接收的current
+      this.myCurrentPage = currentPage;
+      // 分发vue自定义事件：通知父组件，代码变了
+      this.$emit("currentChange", currentPage);
     },
   },
 };

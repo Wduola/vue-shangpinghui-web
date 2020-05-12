@@ -82,9 +82,9 @@
               >
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="javascript:">
+                    <router-link :to="`/detail/${goods.id}`">
                       <img :src="goods.defaultImg" />
-                    </a>
+                    </router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -93,7 +93,9 @@
                     </strong>
                   </div>
                   <div class="attr">
-                    <a href="javascript:">{{ goods.title }}</a>
+                    <router-link :to="`/detail/${goods.id}`"
+                      >{{ goods.title }}
+                    </router-link>
                   </div>
                   <div class="commit">
                     <i class="command">已有<span>2000</span>人评价</i>
@@ -144,7 +146,7 @@ export default {
         props: [], // 商品属性的数组: ["属性ID:属性值:属性名"] 示例: ["2:6.0～6.24英寸:屏幕尺寸"]
         order: "1:asc", // 排序方式  1: 综合,2: 价格 asc: 升序,desc: 降序  示例: "1:desc"
         pageNo: 1, // 当前页码
-        pageSize: 10, // 每页数量
+        pageSize: 5, // 每页数量
       },
     };
   },
@@ -184,10 +186,17 @@ export default {
     */
   mounted() {
     console.log("Search mounted()");
-    this.$store.dispatch("getProductList", this.options);
+    this.getProductList();
   },
 
   methods: {
+    // 异步获取指定页商品数
+    getProductList(pageNo = 1) {
+      // 更新options中的pageNo
+      this.options.pageNo = pageNo;
+      // 重新请求数据显示
+      this.$store.dispatch("getProductList", this.options);
+    },
     // 当选择改变当前页码时的事件监听回调
     handlCurrentChange(currentPage) {
       // 更新options中的pageNo
@@ -214,7 +223,7 @@ export default {
       // 设置新的order值
       this.options.order = orderFlag + ":" + orderType;
       // 重新请求显示
-      this.$store.dispatch("getProductList", this.options);
+      this.getProductList();
     },
     /* 
       删除指定下标的属性条件
@@ -223,7 +232,7 @@ export default {
       // 删除对应的prop
       this.options.props.splice(index, 1);
       // 重新请求数据显示
-      this.$store.dispatch("getProductList", this.options);
+      this.getProductList();
     },
 
     /* 
@@ -241,7 +250,7 @@ export default {
       this.options.props.push(prop);
 
       // 重新请求数据显示
-      this.$store.dispatch("getProductList", this.options);
+      this.getProductList();
     },
 
     /* 
@@ -260,7 +269,7 @@ export default {
         this.options.trademark = trademark;
       }
       // 重新请求数据显示
-      this.$store.dispatch("getProductList", this.options);
+      this.getProductList();
     },
 
     /* 
@@ -270,6 +279,8 @@ export default {
       // 重置trademark数据
       // delete this.options.trademark;//不会更新界面
       this.$delete(this.options, "trademark");
+      // 重新请求获取商品列表显示
+      this.getProductList();
     },
 
     /* 
