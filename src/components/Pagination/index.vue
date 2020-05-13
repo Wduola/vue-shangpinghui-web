@@ -103,6 +103,8 @@ export default {
   methods: {
     // 设置当前页码
     setCurrentPage(currentPage) {
+      // 如果设置的是当前页码，直接结束
+      if (currentPage === this.myCurrentPage) return;
       // 一定要跟新 自己data中当前页码，而不是更新接收的current
       this.myCurrentPage = currentPage;
       // 分发vue自定义事件：通知父组件，代码变了

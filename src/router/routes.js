@@ -24,7 +24,7 @@ export default [
   },
   {
     name: "detail", // 是当前路由的标识名称
-    path: "/detail/:id",
+    path: "/detail/:skuId",
     component: Detail,
   },
   {
