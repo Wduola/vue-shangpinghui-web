@@ -1,15 +1,11 @@
-/* 
-包含所有接口请求函数的模块
-每个函数的返回值都是promise
-*/
+// 包含所有接口请求函数的模块
+// 每个函数的返回值都是promise
 
 import ajax from "./ajax";
 import mockAjax from "./mockAjax";
 
-/* 
-请求获取3级分类列表
-/api/product/getBaseCategoryList
-*/
+// 请求获取3级分类列表
+// /api/product/getBaseCategoryList
 export function reqBaseCategoryList() {
   // return ajax('/product/getBaseCategoryList')
   return ajax({
@@ -19,11 +15,9 @@ export function reqBaseCategoryList() {
   // return ajax.get('/product/getBaseCategoryList')
 }
 
-/* 
-请求登陆
-/api/user/passport/login
-POST
-*/
+// 请求登陆
+// /api/user/passport/login
+// POST
 export function reqLogin(mobile, password) {
   return ajax({
     method: "POST",
@@ -38,9 +32,7 @@ export function reqLogin(mobile, password) {
 export const reqBanners = () => mockAjax("/banners");
 export const reqFloors = () => mockAjax("/floors");
 
-/* 
-根据搜索的条件参数对象获取商品列表数据
-*/
+// 根据搜索的条件参数对象获取商品列表数据
 export const reqProductList = (searchParams) =>
   ajax({
     url: "/list",
@@ -51,3 +43,21 @@ export const reqProductList = (searchParams) =>
 // /api/item/{skud}
 export const reqProduct = (skuId) => ajax(`/item/${skuId}`);
 // reqProduct(6);//测试查看数据
+
+// 添加购物车
+// /api/cart/addToCart/{ skuId }/{ skuNum }
+export const reqAddToCart = (skuId, skuNum) =>
+  ajax.post(`/cart/addToCart/${skuId}/${skuNum}`);
+
+// 获取购物车列表
+// /api/cart/cartList GET
+export const reqCartList = () => ajax("/cart/cartList");
+
+// 切换商品选中状态
+// /api/cart/checkCart/{skuID}/{isChecked} GET
+export const reqCheckCartItem = (skuId, isChecked) =>
+  ajax(`/cart/checkCart/${skuID}/${isChecked}`);
+
+// 删除购物车商品
+// /api/cart/deleteCart/{skuId} DELETE
+export const reqDeleteCartItem = () => ajax.delete(`/cart/deleteCart/${skuId}`);

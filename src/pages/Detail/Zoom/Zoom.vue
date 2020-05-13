@@ -27,7 +27,7 @@ export default {
       // 取出相关数据
       // 事件的坐标（相对于事件源div的左上角）
       const { offsetX, offsetY } = event;
-      console.log(offsetX, offsetY);
+      // console.log(offsetX, offsetY);
       // mask的宽度
       const maskWidth = this.maskWidth;
       // 计算left

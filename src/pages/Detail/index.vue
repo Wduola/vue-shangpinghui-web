@@ -79,39 +79,31 @@
           <div class="choose">
             <div class="chooseArea">
               <div class="choosed"></div>
-              <dl>
-                <dt class="title">选择颜色</dt>
-                <dd changepirce="0" class="active">金色</dd>
-                <dd changepirce="40">银色</dd>
-                <dd changepirce="90">黑色</dd>
-              </dl>
-              <dl>
-                <dt class="title">内存容量</dt>
-                <dd changepirce="0" class="active">16G</dd>
-                <dd changepirce="300">64G</dd>
-                <dd changepirce="900">128G</dd>
-                <dd changepirce="1300">256G</dd>
-              </dl>
-              <dl>
-                <dt class="title">选择版本</dt>
-                <dd changepirce="0" class="active">公开版</dd>
-                <dd changepirce="-1000">移动版</dd>
-              </dl>
-              <dl>
-                <dt class="title">购买方式</dt>
-                <dd changepirce="0" class="active">官方标配</dd>
-                <dd changepirce="-240">优惠移动版</dd>
-                <dd changepirce="-390">电信优惠版</dd>
+              <dl v-for="attr in spuSaleAttrList" :key="attr.id">
+                <dt class="title">{{ attr.saleAttrName }}</dt>
+                <dd
+                  v-for="value in attr.spuSaleAttrValueList"
+                  :key="value.id"
+                  :class="{ active: value.isChecked === '1' }"
+                  @click="selectValue(value, attr.spuSaleAttrValueList)"
+                >
+                  {{ value.saleAttrValueName }}
+                </dd>
               </dl>
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt" />
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model="skuNum" />
+                <a href="javascript:" class="plus" @click="skuNum += 1">+</a>
+                <a
+                  href="javascript:"
+                  class="mins"
+                  @click="skuNum = skuNum > 1 ? skuNum - 1 : 1"
+                  >-</a
+                >
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a href="javascript:" @click="addToCart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -378,14 +370,71 @@ export default {
     ...mapState({
       detailInfo: (state) => state.detail.detailInfo,
     }),
-    ...mapGetters(["categoryView", "skuInfo", "skuImageList"]),
+    ...mapGetters([
+      "categoryView",
+      "skuInfo",
+      "skuImageList",
+      "spuSaleAttrList",
+    ]),
   },
   mounted() {
     this.$store.dispatch("getDetailInfo", this.$route.params.skuId);
   },
   methods: {
-    handleCurrentChange(currentIndex) {
-      this.currentIndex = currentIndex;
+    // 添加到购物车
+    async addToCart() {
+      // 取出商品的id和数量
+      const skuId = this.$route.params.skuId;
+      const skuNum = this.skuNum;
+      // this.$store.dispatch("addToCart", { skuId: 6, skuNum: 2 }); //测试
+      // 方法一：
+      // this.$store.dispatch('addToCart',{skuId,skuNum,callback:this.callback})
+      // 方式二: 利用dispatch()的promise返回值
+      /* const errorMsg = await this.$store.dispatch('addToCart2', {})
+          if (errorMsg) { // 如果有值, 说明添加失败了
+            alert(errorMsg)
+          } else {
+            alert('添加成功, 准备自动跳转到成功的界面')
+          }
+        */
+      //  方法三：
+      try {
+        await this.$store.dispatch("addToCart3", { skuId, skuNum });
+        // 向sessionStorage中保存skuInfo
+        window.sessionStorage.setItem(
+          "SKU_INFO_KEY",
+          JSON.stringify(this.skuInfo)
+        );
+        // alert("添加成功，准备自动跳转到成功页面");
+        this.$router.push({
+          path: "/addcartsuccess",
+          query: { skuNum },
+        });
+      } catch (error) {
+        alert(error.message);
+      }
+    },
+    // 当异步action结束时自动调用回调函数
+    callback(errorMsg) {
+      if (errorMsg) {
+        alert(errorMsg);
+      } else {
+        alert("添加成功，准备自动跳转到成功的界面");
+      }
+    },
+    // 当前图片下标发生改变的监听回调函数
+    handleCurrentChange(index) {
+      this.currentIndex = index;
+    },
+    // 选择某个属性值
+    selectValue(value, valueList) {
+      // 如果当前项没有选中才处理
+      if (value.isChecked !== "1") {
+        // 将所有的选项都指定为不选择
+        valueList.forEach((v) => (v.isChecked = "0"));
+        // 选中当前的
+        value.isChecked = "1";
+      }
     },
   },
   components: {
