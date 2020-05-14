@@ -405,6 +405,11 @@ export default {
           "SKU_INFO_KEY",
           JSON.stringify(this.skuInfo)
         );
+        // 向localStorage中保存skuInfo
+        // window.localStorage.setItem(
+        //   "SKU_INFO_KEY",
+        //   JSON.stringify(this.skuInfo)
+        // );
         // alert("添加成功，准备自动跳转到成功页面");
         this.$router.push({
           path: "/addcartsuccess",

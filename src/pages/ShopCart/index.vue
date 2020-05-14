@@ -11,36 +11,58 @@
         <div class="cart-th6">操作</div>
       </div>
       <div class="cart-body">
-        <ul class="cart-list">
+        <ul class="cart-list" v-for="item in cartList" :key="item.id">
           <li class="cart-list-con1">
-            <input type="checkbox" name="chk_list" />
+            <input
+              type="checkbox"
+              name="chk_list"
+              :checked="item.isChecked === 1"
+              @change="checkCartItem(item)"
+            />
           </li>
           <li class="cart-list-con2">
-            <img src="./images/goods1.png" />
+            <img :src="item.imgUrl" />
             <div class="item-msg">
-              米家（MIJIA） 小米小白智能摄像机增强版
-              1080p高清360度全景拍摄AI增强
+              {{ item.skuName }}
             </div>
           </li>
           <li class="cart-list-con4">
-            <span class="price">399.00</span>
+            <span class="price">{{ item.cartPrice }}</span>
           </li>
           <li class="cart-list-con5">
-            <a href="javascript:void(0)" class="mins">-</a>
+            <a
+              href="javascript:void(0)"
+              class="mins"
+              @click="changeItemNum(item, -1)"
+              >-</a
+            >
             <input
               autocomplete="off"
               type="text"
-              value="1"
-              minnum="1"
               class="itxt"
+              v-model="item.skuNum"
+              @change="
+                changeItemNum(
+                  item,
+                  $event.target.value * 1 - item.skuNum,
+                  $event
+                )
+              "
             />
-            <a href="javascript:void(0)" class="plus">+</a>
+            <a
+              href="javascript:void(0)"
+              class="plus"
+              @click="changeItemNum(item, 1)"
+              >+</a
+            >
           </li>
           <li class="cart-list-con6">
-            <span class="sum">399</span>
+            <span class="sum">{{ item.cartPrice * item.skuNum }}</span>
           </li>
           <li class="cart-list-con7">
-            <a href="#none" class="sindelet">删除</a>
+            <a href="#none" class="sindelet" @click="deleteCartItem(item)"
+              >删除</a
+            >
             <br />
             <a href="#none">移到收藏</a>
           </li>
@@ -49,19 +71,22 @@
     </div>
     <div class="cart-tool">
       <div class="select-all">
-        <input class="chooseAll" type="checkbox" />
+        <input class="chooseAll" type="checkbox" v-model="isAllChecked" />
         <span>全选</span>
       </div>
       <div class="option">
-        <a href="#none">删除选中的商品</a>
+        <a href="#none" @click="deleteCheckedCartItems">删除选中的商品</a>
         <a href="#none">移到我的关注</a>
         <a href="#none">清除下柜商品</a>
       </div>
       <div class="money-box">
-        <div class="chosed">已选择 <span>0</span>件商品</div>
+        <div class="chosed">
+          已选择 <span>{{ totalCount }}</span
+          >件商品
+        </div>
         <div class="sumprice">
           <em>总价（不含运费） ：</em>
-          <i class="summoney">0</i>
+          <i class="summoney">{{ totalPrice }}</i>
         </div>
         <div class="sumbtn">
           <a class="sum-btn" href="###" target="_blank">结算</a>
@@ -72,8 +97,115 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "ShopCart",
+  date() {
+    return {
+      isAllChecked: false,
+    };
+  },
+  computed: {
+    // 使用mapState写法
+    ...mapState({
+      cartList: (state) => state.shopCart.cartList,
+    }),
+    ...mapGetters(["totalCount", "totalPrice"]),
+    // 不使用mapState的写法
+    cartList2() {
+      return this.$store.state.shopCart.cartList;
+    },
+    // 是否全选的计算属性
+    isAllChecked: {
+      // 根据cartList来计算
+      get() {
+        // 判断是否所有的item的isChecked为1
+        // return this.cartList.filter(item=>item.isChecked!==1).length===0
+        // return !this.cartList.some((item) => item.isChecked === 0); //是否有一个满足条件
+        return this.cartList.every((item) => item.isChecked === 1); //是否有一个满足条件
+      },
+      async set(value) {
+        try {
+          // 监视当前勾选状态的改变
+          const result = this.$store.dispatch("checkAllCartItems", value);
+          // 成功了重新获取列表数据
+          this.$store.dispatch("getCartList");
+        } catch (error) {
+          alert(error.message);
+        }
+      },
+    },
+  },
+  mounted() {
+    this.$store.dispatch("getCartList");
+  },
+  methods: {
+    // 改变购物项中数量
+    async changeItemNum(item, numChange, event) {
+      if (item.skuNum + numChange > 0) {
+        try {
+          // 如果修改数量后的数量小于1, 直接结束
+          if (item.skuNum + numChange < 1) return;
+          // 分发一个异步action
+          await this.$store.dispatch("addToCart3", {
+            skuId: item.skuId,
+            skuNum: numChange,
+          });
+          // 异步请求操作成功了, 重新获取数据显示
+          this.$store.dispatch("getCartList");
+        } catch (error) {
+          // 异步请求操作失败了
+          alert(error.message);
+        }
+      } else {
+        if (event) {
+          event.target.value = item.skuNum;
+        }
+      }
+    },
+    // 改变当前购物项的勾选
+    async checkCartItem(item) {
+      // 准备skuId,isChecked
+      const skuId = item.skuId;
+      const isChecked = item.isChecked === 1 ? 0 : 1;
+      try {
+        // 分发异步
+        await this.$store.dispatch("checkCartItem", { skuId, isChecked });
+        // 成功了获取最新的数据
+        this.$store.dispatch("getCartList");
+      } catch (error) {
+        alert(error.message);
+      }
+    },
+    // 删除指定购物项
+    async deleteCartItem(item) {
+      if (window.confirm(`确定删除${item.skuName}吗?`)) {
+        try {
+          // 分发一个异步action
+          await this.$store.dispatch("deleteCartItem", item.skuId);
+          // 异步请求操作成功了
+          this.$store.dispatch("getCartList");
+        } catch (error) {
+          // 异步请求操作失败了
+          alert(error.message);
+        }
+      }
+    },
+    //删除所有选中的购物项
+    async deleteCheckedCartItems() {
+      if (window.confirm(`确定删除吗?`)) {
+        try {
+          // 分发一个异步action
+          await this.$store.dispatch("deleteCheckedCartItems");
+          // 异步请求操作成功了
+          this.$store.dispatch("getCartList");
+        } catch (error) {
+          // 异步请求操作失败了
+          alert(error.message);
+        }
+      }
+    },
+  },
 };
 </script>
 

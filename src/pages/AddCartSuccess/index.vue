@@ -17,9 +17,9 @@
           </div>
         </div>
         <div class="right-gocart">
-          <router-link class="sui-btn btn-xlarge" :to="`/detail/${skuInfo.id}`"
-            >查看商品详情</router-link
-          >
+          <router-link class="sui-btn btn-xlarge" :to="`/detail/${skuInfo.id}`">
+            查看商品详情
+          </router-link>
           <a href="javascript:" @click="$router.push('/shopcart')"
             >去购物车结算 >
           </a>
@@ -41,6 +41,8 @@ export default {
   beforeMount() {
     // 在sessionStorage中读取前面保存的skuInfo
     this.skuInfo = JSON.parse(window.sessionStorage.getItem("SKU_INFO_KEY"));
+    // 在localStorage中读取前面保存的skuInfo
+    // this.skuInfo = JSON.parse(window.localStorage.getItem("SKU_INFO_KEY"));
   },
 };
 </script>
