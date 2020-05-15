@@ -2,10 +2,11 @@
 import Home from "@/pages/Home";
 import Search from "@/pages/Search";
 import Detail from "@/pages/Detail";
-import Register from "@/pages/Register";
-import Login from "@/pages/Login";
 import AddCartSuccess from "@/pages/AddCartSuccess";
 import ShopCart from "@/pages/ShopCart";
+
+import Register from "@/pages/Register";
+import Login from "@/pages/Login";
 
 export default [
   {

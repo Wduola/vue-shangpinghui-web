@@ -1,4 +1,5 @@
 // 包含一些工具函数的模块
+// 得到当前用户的临时id
 import { v4 as uuidv4 } from "uuid";
 
 // 得到用户的临时id
@@ -12,4 +13,14 @@ export function getUserTempId() {
   }
   // 返回
   return userTempId;
+}
+
+// 保存用户信息
+export function saveUserInfo(userInfo) {
+  localStorage.setItem("USER_INFO_KEY", JSON.stringify(userInfo));
+}
+
+// 读取local中保存的用户信息
+export function getUserInfo() {
+  return JSON.parse(localStorage.getItem("USER_INFO_KEY")) || {};
 }
