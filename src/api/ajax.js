@@ -5,6 +5,7 @@
     3. 成功返回的数据不再是response, 而直接是响应体数据response.data
     4. 统一处理请求错误, 具体请求也可以选择处理或不处理
     5. 每次请求都携带一个userTempId请求头, 数据值在state中
+    6. 每次请求(已登陆)都携带一个token请求头, 数据值在state中
 */
 
 import axios from "axios";
@@ -30,6 +31,11 @@ instance.interceptors.request.use((config) => {
   NProgress.start();
   /*---------------------------------------- 5. 每次请求都携带一个userTempId请求头, 数据值在state中 */
   config.headers["userTempId"] = store.state.user.userTempId;
+  /*----------------------------------------6. 每次请求(已登陆)都携带一个token请求头, 数据值在state中*/
+  const token = store.state.user.userInfo.token;
+  if (token) {
+    config.headers["token"] = token;
+  }
   return config;
 });
 

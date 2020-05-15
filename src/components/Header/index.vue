@@ -7,7 +7,7 @@
           <p>尚品汇欢迎您！</p>
           <p v-if="userInfo.name">
             <span>{{ userInfo.nickName }}</span>
-            <a href="javascript:;">&nbsp;&nbsp;登录</a>
+            <a href="javascript:;" @click="logout">&nbsp;&nbsp;登录</a>
           </p>
           <p v-else>
             <span>请</span>
@@ -82,9 +82,15 @@ export default {
   },
 
   methods: {
+    // 退出登陸
+    logout() {
+      if (window.confirm("確定退出嗎？")) {
+        this.$store.dispatch("logout");
+      }
+    },
+    // 搜索
     search() {
       const keyword = this.keyword;
-
       const location = {
         // push是重写后的方法
         name: "search",
@@ -93,11 +99,9 @@ export default {
       if (keyword) {
         location.params = { keyword };
       }
-
       // 同时还要携带当前原本的query
       const { query } = this.$route;
       location.query = query;
-
       // 跳转到Search
       // 如果当前在Search, 使用replace(), 否则使用push
       // if (this.$route.name==="search") {

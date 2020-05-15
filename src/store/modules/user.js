@@ -1,6 +1,11 @@
 // 用来管理用户数据的vuex模块
-import { getUserTempId, saveUserInfo, getUserInfo } from "@/utils";
-import { reqRegister, reqLogin } from "@/api";
+import {
+  getUserTempId,
+  saveUserInfo,
+  getUserInfo,
+  removeUserInfo,
+} from "@/utils";
+import { reqRegister, reqLogin, reqLogout } from "@/api";
 
 export default {
   state: {
@@ -11,8 +16,23 @@ export default {
     RECEIVE_USER_INFO(state, { userInfo }) {
       state.userInfo = userInfo;
     },
+    RESET_USER_INFO(state) {
+      state.userInfo = {};
+    },
   },
   actions: {
+    // 退出登陸
+    async logout({ commit }) {
+      const result = await reqLogout();
+      if (result.code === 200) {
+        // 清除vuex中的用戶信息
+        commit("RESET_USER_INFO");
+        // 清除localStorage中的用戶信息
+        removeUserInfo();
+      } else {
+        alert(result.message || "退出登陸失敗");
+      }
+    },
     // 注册的异步action
     async register(context, userInfo) {
       const result = await reqRegister(userInfo);
