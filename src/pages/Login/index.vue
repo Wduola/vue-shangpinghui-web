@@ -90,7 +90,15 @@ export default {
       const { mobile, password } = this;
       try {
         await this.$store.dispatch("login", { mobile, password });
-        this.$router.replace("/");
+        // 读取redirect参数
+        const redirect = this.$route.query.redirect;
+        // 判断如果有redirect，就跳转到redirect指定的页面中
+        console.log("-----------------" + redirect);
+        if (redirect) {
+          this.$router.replace(redirect);
+        } else {
+          this.$router.replace("/");
+        }
       } catch (error) {
         alert(error.message);
       }

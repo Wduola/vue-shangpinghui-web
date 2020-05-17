@@ -43,6 +43,21 @@ export default {
     this.skuInfo = JSON.parse(window.sessionStorage.getItem("SKU_INFO_KEY"));
     // 在localStorage中读取前面保存的skuInfo
     // this.skuInfo = JSON.parse(window.localStorage.getItem("SKU_INFO_KEY"));
+
+    // 组件守卫
+    // 只有携带skuNumhe sessionStorage中有skuInfo数据，才可以添加到购物车
+    /* beforeRouteEnter (to, from, next) { 
+        // 得到要跳转到目路由的query参数
+        const skuNum = to.query.skuNum
+        // 读取保存的数据
+        const skuInfo = JSON.parse(window.sessionStorage.getItem('SKU_INFO_KEY'))
+        // 只有都存在, 才放行
+        if (skuNum && skuInfo) {
+          next()
+        } else { // 在组件对象创建前强制跳转到首页
+          next('/')
+        }
+    } */
   },
 };
 </script>

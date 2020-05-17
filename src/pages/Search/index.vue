@@ -102,9 +102,9 @@
                   </div>
                   <div class="operate">
                     <a
-                      href="success-cart.html"
-                      target="_blank"
+                      href="javascript:;"
                       class="sui-btn btn-bordered btn-danger"
+                      @click="addToCart(goods)"
                       >加入购物车</a
                     >
                     <a href="javascript:void(0);" class="sui-btn btn-bordered"
@@ -120,7 +120,7 @@
             :pageSize="options.pageSize"
             :total="productList.total"
             :showPageNo="3"
-            @currentChange="handlCurrentChange"
+            @currentChange="getProductList"
           />
         </div>
       </div>
@@ -164,9 +164,7 @@ export default {
   },
 
   watch: {
-    /* 
-      当路由跳转时只有路由参数发生了变化
-      */
+    // 当路由跳转时只有路由参数发生了变化
     $route() {
       this.updateOptions();
       // 请求获取数据
@@ -174,22 +172,42 @@ export default {
     },
   },
 
-  /* 
-    放初始同步更新data数据的代码
-    */
+  // 放初始同步更新data数据的代码
   beforeMount() {
     this.updateOptions();
   },
 
-  /* 
-    初始异步更新的代码
-    */
+  // 初始异步更新的代码
   mounted() {
-    console.log("Search mounted()");
+    // console.log("Search mounted()");
     this.getProductList();
   },
 
   methods: {
+    //添加到购物车
+    // 只有携带skuNumhe sessionStorage中有skuInfo数据，才可以添加到购物车
+    async addToCart(goods) {
+      try {
+        await this.$store.dispatch("addToCart3", {
+          skuId: goods.id,
+          skuNum: 1,
+        });
+        // 根据当前商品的信息数据整理一个skuInfo对象
+        const skuInfo = {
+          skuDefaultImg: goods.defaultImg,
+          skuName: goods.title,
+          id: goods.id,
+        };
+        window.sessionStorage.setItem("SKU_INFO_KYE", JSON.stringify(skuInfo));
+        this.$router.push({
+          path: "/addcartsuccess",
+          query: { skuNum: 1 },
+        });
+      } catch (error) {
+        alert(error.message);
+      }
+    },
+
     // 异步获取指定页商品数
     getProductList(pageNo = 1) {
       // 更新options中的pageNo
@@ -197,17 +215,20 @@ export default {
       // 重新请求数据显示
       this.$store.dispatch("getProductList", this.options);
     },
+
     // 当选择改变当前页码时的事件监听回调
-    handlCurrentChange(currentPage) {
-      // 更新options中的pageNo
-      this.options.pageNo = currentPage;
-      // 重新请求显示
-      this.$store.dispatch("getProductList", this.options);
-    },
+    // handlCurrentChange(currentPage) {
+    //   // 更新options中的pageNo
+    //   this.options.pageNo = currentPage;
+    //   // 重新请求显示
+    //   this.$store.dispatch("getProductList", this.options);
+    // },
+
     //判断指定flag的排序项是否是当前项
     isActiv(orderFlag) {
       return this.options.order.indexOf(orderFlag) === 0;
     },
+
     // 设置新的排序
     setOrder(flag) {
       // 得到原本的orderFlag和orderType
@@ -225,9 +246,8 @@ export default {
       // 重新请求显示
       this.getProductList();
     },
-    /* 
-      删除指定下标的属性条件
-      */
+
+    // 删除指定下标的属性条件
     removeProp(index) {
       // 删除对应的prop
       this.options.props.splice(index, 1);
@@ -235,27 +255,20 @@ export default {
       this.getProductList();
     },
 
-    /* 
-      添加一个属性条件
-      */
+    // 添加一个属性条件
     addProp(attrId, value, attrName) {
       // 组装prop
       const prop = `${attrId}:${value}:${attrName}`;
-
       // 如果已经添加过了当前属性, 直接结束
       // ["属性ID:属性值:属性名"]
       if (this.options.props.indexOf(prop) !== -1) return;
-
       // 向options中的props添加一个prop
       this.options.props.push(prop);
-
       // 重新请求数据显示
       this.getProductList();
     },
 
-    /* 
-      设置新的品牌条件数据
-      */
+    // 设置新的品牌条件数据
     setTrademark(trademark) {
       // 更新options中的trademark
       // this.options.trademark = trademark
@@ -272,9 +285,7 @@ export default {
       this.getProductList();
     },
 
-    /* 
-      移除品牌搜索条件
-      */
+    // 移除品牌搜索条件
     removeTrademark() {
       // 重置trademark数据
       // delete this.options.trademark;//不会更新界面
@@ -283,9 +294,7 @@ export default {
       this.getProductList();
     },
 
-    /* 
-      移除分类的搜索条件
-      */
+    // 移除分类的搜索条件
     removeCategory() {
       // 重置分类的条件数据
       this.options.categoryName = "";
@@ -298,9 +307,7 @@ export default {
       this.$router.replace(this.$route.path); // $route.path不带query参数, 但带params参数(如果有)
     },
 
-    /* 
-      移除关键字的搜索条件
-      */
+    // 移除关键字的搜索条件
     removeKeyword() {
       // 重置分类的条件数据
       this.options.keyword = "";
@@ -315,9 +322,7 @@ export default {
       this.$bus.$emit("removeKeyword");
     },
 
-    /* 
-      根据query和params来更新options数据
-      */
+    // 根据query和params来更新options数据
     updateOptions() {
       // 根据query和params更新options
       const {

@@ -1,6 +1,4 @@
-/* 
-入口js
-*/
+// 入口js
 import Vue from "vue";
 import "swiper/css/swiper.min.css"; // 如果需要查找包下的非主模块, 需要指定后面的路径
 
