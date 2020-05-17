@@ -76,3 +76,23 @@ export const reqLogout = () => ajax("/user/passport/logout");
 // /api/order/auth/{page}/{limit}  GET
 export const reqMyOrders = (page, limit) =>
   ajax(`/order/auth/${page}/${limit}`);
+
+//获取订单交易页信息
+export const reqTradeInfo = () => ajax("/order/auth/trade");
+
+// 提交订单
+export const reqSubmitOrder = () =>
+  ajax({
+    url: "/order/auth/reqSubmitOrder",
+    methods: "POST",
+    params: { tradeNo },
+    data: orderInfo,
+  }); //当前基于axios语法配置
+
+// 获取订单支付信息
+export const reqPayInfo = (orderId) =>
+  ajax(`/payment/weixin/createNative/${orderId}`);
+
+// 查询支付订单装填
+export const reqOrderStatus = (orderId) =>
+  ajax(`/payment/weixin/queryPayStatus/${orderId}`);

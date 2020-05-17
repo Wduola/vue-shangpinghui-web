@@ -6,7 +6,8 @@ import home from "./home";
 import user from "./user";
 import search from "./search"; // 取默认暴露的模块, 如果没有就是undefined
 import detail from "./detail"; //商品详情页
-import shopCart from "./shopCart";
+import shopCart from "./shopCart"; //购物车模块
+import order from "./order"; //订单模块
 
 // console.log('search', search)
 
@@ -16,6 +17,7 @@ export default {
   search,
   detail,
   shopCart,
+  order,
 };
 
 /* 
