@@ -137,7 +137,8 @@ export default {
   methods: {
     async submitOrder() {
       // 准备要提交的请求参数数据
-      const { tradeNo, detailArraylist } = this.tradeInfo;
+      const { tradeNo, detailArrayList } = this.tradeInfo;
+      // console.log("-----------------------------------" + tradeNo);
       const { userAddress, consignee, phoneNum } = this.selectedAddr;
       const orderInfo = {
         // 地址相关的3个数据
@@ -151,6 +152,7 @@ export default {
       };
       // 发送提交订单的请求
       const result = await this.$API.reqSubmitOrder(tradeNo, orderInfo);
+      // console.log("-----------------------------------" + result);
       // 如果成功了，跳转到支付
       if (result.code === 200) {
         const orderId = result.data;

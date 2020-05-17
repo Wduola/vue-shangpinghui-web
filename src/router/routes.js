@@ -87,6 +87,8 @@ export default [
     //支付页
     path: "/pay",
     component: Pay,
+    // 将query参数映射成props传递给路由组件
+    props: (route) => ({ orderId: route.query.orderId }),
     // 路由守卫
     // 只能从交易界面, 才能跳转到支付界面
     beforeEnter(to, from, next) {

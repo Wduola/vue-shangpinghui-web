@@ -78,21 +78,25 @@ export const reqMyOrders = (page, limit) =>
   ajax(`/order/auth/${page}/${limit}`);
 
 //获取订单交易页信息
+// /api/order/auth/trade  GET
 export const reqTradeInfo = () => ajax("/order/auth/trade");
 
 // 提交订单
-export const reqSubmitOrder = () =>
+// /api/order/auth/submitOrder?tradeNo={tradeNo} POST
+export const reqSubmitOrder = (tradeNo, orderInfo) =>
   ajax({
-    url: "/order/auth/reqSubmitOrder",
-    methods: "POST",
-    params: { tradeNo },
-    data: orderInfo,
-  }); //当前基于axios语法配置
+    url: "/order/auth/submitOrder",
+    method: "POST",
+    params: { tradeNo }, // 指定的是请求的query参数
+    data: orderInfo, // 指定请求体数据对象  ==> 当前是包含订单信息
+  }); // 当前是基于axios语法的配置, 而不vue-router
 
 // 获取订单支付信息
+// /api/payment/weixin/createNative/{orderId}  GET
 export const reqPayInfo = (orderId) =>
   ajax(`/payment/weixin/createNative/${orderId}`);
 
 // 查询支付订单装填
+// /api/payment/weixin/queryPayStatus/{orderId} GET
 export const reqOrderStatus = (orderId) =>
   ajax(`/payment/weixin/queryPayStatus/${orderId}`);
