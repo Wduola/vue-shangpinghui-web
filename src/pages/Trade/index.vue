@@ -138,7 +138,7 @@ export default {
     async submitOrder() {
       // 准备要提交的请求参数数据
       const { tradeNo, detailArrayList } = this.tradeInfo;
-      // console.log("-----------------------------------" + tradeNo);
+      console.log("-----------------------------------" + tradeNo);
       const { userAddress, consignee, phoneNum } = this.selectedAddr;
       const orderInfo = {
         // 地址相关的3个数据

@@ -11,6 +11,7 @@ import Pagination from "@/components/Pagination"; //分頁顯示
 import "./mock/mockServer";
 import "./validate"; //vee-validate
 import * as API from "@/api"; // 引入所有接口请求函数并包装在API对象中
+import "./element-ui"; //element-ui模块
 
 Vue.config.productionTip = false; // 去掉不是生产环境的提示
 
