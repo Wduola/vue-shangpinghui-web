@@ -1,9 +1,8 @@
 // 所有路由配置的数组
 
-// 路由的按需加载
-// import Home from "@/pages/Home";
-// import Search from "@/pages/Search";// 路由的按需加载
-const Search = () => import("@/pages/Search");
+// import Home from "@/pages/Home";// 路由的按需加载
+// import Search from "@/pages/Search";
+const Search = () => import("@/pages/Search"); // 路由的按需加载
 import Detail from "@/pages/Detail";
 import AddCartSuccess from "@/pages/AddCartSuccess";
 import ShopCart from "@/pages/ShopCart";
